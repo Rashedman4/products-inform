@@ -1,0 +1,187 @@
+### Base
+@baseUrl = http://localhost:8080/api/v1
+
+### 1) Get all products
+GET {{baseUrl}}/products
+Accept: application/json
+
+###
+
+### 2) Create a product
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 25.50,
+  "name": "Gaming Mouse",
+  "category": "Electronics",
+  "quantity": 10
+}
+
+###
+
+### 3) Create another product
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 12.99,
+  "name": "Notebook A5",
+  "category": "Office",
+  "quantity": 30
+}
+
+###
+
+### 4) Get product by ID
+### WARNING: in your current code this also sets isSeen=true and isPaid=true
+GET {{baseUrl}}/products/id/1
+Accept: application/json
+
+###
+
+### 5) Get product by name
+GET {{baseUrl}}/products/name/mouse
+Accept: application/json
+
+###
+
+### 6) Get product by category
+GET {{baseUrl}}/products/category/electronics
+Accept: application/json
+
+###
+
+### 7) Get product by price
+### WARNING: your current price filter logic is wrong, so results may be weird
+GET {{baseUrl}}/products/price/25
+Accept: application/json
+
+###
+
+### 8) Sort by name
+GET {{baseUrl}}/products/sort/name
+Accept: application/json
+
+###
+
+### 9) Sort by price
+GET {{baseUrl}}/products/sort/price
+Accept: application/json
+
+###
+
+### 10) Sort by category
+GET {{baseUrl}}/products/sort/category
+Accept: application/json
+
+###
+
+### 11) Sort by id
+GET {{baseUrl}}/products/sort/id
+Accept: application/json
+
+###
+
+### 12) Update product by ID
+PUT {{baseUrl}}/products/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 49.99,
+  "name": "Gaming Mouse Pro",
+  "category": "Electronics",
+  "quantity": 15
+}
+
+###
+
+### 13) Delete product by ID
+DELETE {{baseUrl}}/products/1
+Accept: application/json
+
+###
+
+### 14) Try to get deleted / missing product
+GET {{baseUrl}}/products/id/9999
+Accept: application/json
+
+###
+
+### 15) Validation test - empty name
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "",
+  "category": "Electronics",
+  "quantity": 5
+}
+
+###
+
+### 16) Validation test - empty category
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "Keyboard",
+  "category": "",
+  "quantity": 5
+}
+
+###
+
+### 17) Validation test - quantity = 0
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "Keyboard",
+  "category": "Electronics",
+  "quantity": 0
+}
+
+###
+
+### 18) Validation test - negative price
+### This should hit your IllegalArgumentException handler
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": -5.00,
+  "name": "Bad Product",
+  "category": "Electronics",
+  "quantity": 3
+}
+
+###
+
+### 19) Update non-existing product
+PUT {{baseUrl}}/products/9999
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 20.00,
+  "name": "Updated Missing Product",
+  "category": "Office",
+  "quantity": 2
+}
+
+###
+
+### 20) Delete non-existing product
+DELETE {{baseUrl}}/products/9999
+Accept: application/json

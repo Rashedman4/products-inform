@@ -1,0 +1,1 @@
+GET localhost:8080/api/v3/products?name=mouse&category=electronics&minPrice=700&maxPrice=1000&page=0&size=5&sortBy=name&direction=asc

@@ -1,0 +1,250 @@
+### Base
+@baseUrl = http://localhost:8080/api/v2/products
+
+### 1) Get all products - default pagination/sorting
+GET {{baseUrl}}
+Accept: application/json
+
+###
+
+### 2) Get all products - page 0, size 5, sort by name ascending
+GET {{baseUrl}}?page=0&size=5&sortBy=name&direction=asc
+Accept: application/json
+
+###
+
+### 3) Get all products - page 1, size 5, sort by category descending
+GET {{baseUrl}}?page=1&size=5&sortBy=category&direction=desc
+Accept: application/json
+
+###
+
+### 4) Get all products - sort by id descending
+GET {{baseUrl}}?page=0&size=10&sortBy=id&direction=desc
+Accept: application/json
+
+###
+
+### 5) Create a product
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 25.50,
+  "name": "Gaming Mouse",
+  "category": "Electronics",
+  "quantity": 10
+}
+
+###
+
+### 6) Create another product
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 12.99,
+  "name": "Notebook A5",
+  "category": "Office",
+  "quantity": 30
+}
+
+###
+
+### 7) Create another product
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 89.99,
+  "name": "Wireless Headphones",
+  "category": "Electronics",
+  "quantity": 8
+}
+
+###
+
+### 8) Get product by ID
+### WARNING: in your current code this also sets isSeen=true and isPaid=true
+GET {{baseUrl}}/id/1
+Accept: application/json
+
+###
+
+### 9) Get product by name - default pagination
+GET {{baseUrl}}/name/mouse
+Accept: application/json
+
+###
+
+### 10) Get product by name - paginated and sorted by name ascending
+GET {{baseUrl}}/name/mouse?page=0&size=5&sortBy=name&direction=asc
+Accept: application/json
+
+###
+
+### 11) Get product by name - sorted by id descending
+GET {{baseUrl}}/name/mouse?page=0&size=10&sortBy=id&direction=desc
+Accept: application/json
+
+###
+
+### 12) Get product by category - default pagination
+GET {{baseUrl}}/category/electronics
+Accept: application/json
+
+###
+
+### 13) Get product by category - page 0, size 5, sort by category ascending
+GET {{baseUrl}}/category/electronics?page=0&size=5&sortBy=category&direction=asc
+Accept: application/json
+
+###
+
+### 14) Get product by category - page 1, size 3, sort by name descending
+GET {{baseUrl}}/category/electronics?page=1&size=3&sortBy=name&direction=desc
+Accept: application/json
+
+###
+
+### 15) Get product by price - default pagination
+GET {{baseUrl}}/price/12
+Accept: application/json
+
+###
+
+### 16) Get product by price - page 0, size 5, sort by id ascending
+GET {{baseUrl}}/price/25?page=0&size=5&sortBy=id&direction=asc
+Accept: application/json
+
+###
+
+### 17) Get product by price - sort by name descending
+GET {{baseUrl}}/price/30?page=0&size=10&sortBy=name&direction=desc
+Accept: application/json
+
+###
+
+### 18) Update product by ID
+PUT {{baseUrl}}/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 49.99,
+  "name": "Gaming Mouse Pro",
+  "category": "Electronics",
+  "quantity": 15
+}
+
+###
+
+### 19) Delete product by ID
+DELETE {{baseUrl}}/1
+Accept: application/json
+
+###
+
+### 20) Try to get missing product by ID
+GET {{baseUrl}}/id/9999
+Accept: application/json
+
+###
+
+### 21) Validation test - empty name
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "",
+  "category": "Electronics",
+  "quantity": 5
+}
+
+###
+
+### 22) Validation test - empty category
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "Keyboard",
+  "category": "",
+  "quantity": 5
+}
+
+###
+
+### 23) Validation test - quantity = 0
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "Keyboard",
+  "category": "Electronics",
+  "quantity": 0
+}
+
+###
+
+### 24) Validation test - negative price
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": -5.00,
+  "name": "Bad Product",
+  "category": "Electronics",
+  "quantity": 3
+}
+
+###
+
+### 25) Update non-existing product
+PUT {{baseUrl}}/9999
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 20.00,
+  "name": "Updated Missing Product",
+  "category": "Office",
+  "quantity": 2
+}
+
+###
+
+### 26) Delete non-existing product
+DELETE {{baseUrl}}/9999
+Accept: application/json
+
+###
+
+### 27) Invalid sort field test
+### This depends on your service validation logic
+GET {{baseUrl}}?page=0&size=10&sortBy=wrongField&direction=asc
+Accept: application/json
+
+###
+
+### 28) Invalid direction test
+### This depends on your service logic; some code falls back silently to asc
+GET {{baseUrl}}?page=0&size=10&sortBy=name&direction=wrong
+Accept: application/json
+
+###
+
+### 29) Large page size test
+### Useful if you added max-size protection in service
+GET {{baseUrl}}?page=0&size=100&sortBy=id&direction=asc
+Accept: application/json
