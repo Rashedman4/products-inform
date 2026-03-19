@@ -1,5 +1,5 @@
 ### Base
-@baseUrl = http://localhost:8080/api/v2/products
+@baseUrl = http://localhost:8080/api/v4/products
 
 ### 1) Get all products - default pagination/sorting
 GET {{baseUrl}}
@@ -25,7 +25,13 @@ Accept: application/json
 
 ###
 
-### 5) Create a product
+### 5) Get all products - sort by createdAt descending
+GET {{baseUrl}}?page=0&size=10&sortBy=createdAt&direction=desc
+Accept: application/json
+
+###
+
+### 6) Create a product
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -39,7 +45,7 @@ Accept: application/json
 
 ###
 
-### 6) Create another product
+### 7) Create another product
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -53,7 +59,7 @@ Accept: application/json
 
 ###
 
-### 7) Create another product
+### 8) Create another product
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -67,39 +73,32 @@ Accept: application/json
 
 ###
 
-### 8) Get product by ID
-### WARNING: in your current code this also sets isSeen=true and isPaid=true
+### 9) Get product by ID
 GET {{baseUrl}}/id/1
 Accept: application/json
 
 ###
 
-### 9) Get product by name - default pagination
+### 10) Get product by name - default pagination
 GET {{baseUrl}}/name/mouse
 Accept: application/json
 
 ###
 
-### 10) Get product by name - paginated and sorted by name ascending
+### 11) Get product by name - paginated and sorted by name ascending
 GET {{baseUrl}}/name/mouse?page=0&size=5&sortBy=name&direction=asc
 Accept: application/json
 
 ###
 
-### 11) Get product by name - sorted by id descending
+### 12) Get product by name - sorted by id descending
 GET {{baseUrl}}/name/mouse?page=0&size=10&sortBy=id&direction=desc
 Accept: application/json
 
 ###
 
-### 12) Get product by category - default pagination
+### 13) Get product by category - default pagination
 GET {{baseUrl}}/category/electronics
-Accept: application/json
-
-###
-
-### 13) Get product by category - page 0, size 5, sort by category ascending
-GET {{baseUrl}}/category/electronics?page=0&size=5&sortBy=category&direction=asc
 Accept: application/json
 
 ###
@@ -107,27 +106,34 @@ Accept: application/json
 ### 14) Get product by category - page 0, size 5, sort by category ascending
 GET {{baseUrl}}/category/electronics?page=0&size=16&sortBy=category&direction=asc
 Accept: application/json
+
 ###
 
-### 15) Get product by price - default pagination
+### 15) Get product by category - page 1, size 3, sort by name descending
+GET {{baseUrl}}/category/electronics?page=1&size=3&sortBy=name&direction=desc
+Accept: application/json
+
+###
+
+### 16) Get product by price - default pagination
 GET {{baseUrl}}/price/12
 Accept: application/json
 
 ###
 
-### 16) Get product by price - page 0, size 5, sort by id ascending
+### 17) Get product by price - page 0, size 5, sort by id ascending
 GET {{baseUrl}}/price/25?page=0&size=5&sortBy=id&direction=asc
 Accept: application/json
 
 ###
 
-### 17) Get product by price - sort by name descending
+### 18) Get product by price - sort by name descending
 GET {{baseUrl}}/price/30?page=0&size=10&sortBy=name&direction=desc
 Accept: application/json
 
 ###
 
-### 18) Update product by ID
+### 19) Update product by ID
 PUT {{baseUrl}}/1
 Content-Type: application/json
 Accept: application/json
@@ -141,19 +147,31 @@ Accept: application/json
 
 ###
 
-### 19) Delete product by ID
+### 20) Patch product as seen
+PATCH {{baseUrl}}/seen/1
+Accept: application/json
+
+###
+
+### 21) Patch product as paid
+PATCH {{baseUrl}}/paid/1
+Accept: application/json
+
+###
+
+### 22) Delete product by ID
 DELETE {{baseUrl}}/1
 Accept: application/json
 
 ###
 
-### 20) Try to get missing product by ID
+### 23) Try to get missing product by ID
 GET {{baseUrl}}/id/9999
 Accept: application/json
 
 ###
 
-### 21) Validation test - empty name
+### 24) Validation test - empty name
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -167,7 +185,7 @@ Accept: application/json
 
 ###
 
-### 22) Validation test - empty category
+### 25) Validation test - empty category
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -181,7 +199,7 @@ Accept: application/json
 
 ###
 
-### 23) Validation test - quantity = 0
+### 26) Validation test - quantity = 0
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -195,7 +213,7 @@ Accept: application/json
 
 ###
 
-### 24) Validation test - negative price
+### 27) Validation test - negative price
 POST {{baseUrl}}
 Content-Type: application/json
 Accept: application/json
@@ -209,7 +227,27 @@ Accept: application/json
 
 ###
 
-### 25) Update non-existing product
+### 28) Validation test - invalid enum category
+POST {{baseUrl}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "price": 15.00,
+  "name": "Keyboard",
+  "category": "InvalidCategory",
+  "quantity": 5
+}
+
+###
+
+### 29) Get by invalid enum category
+GET {{baseUrl}}/category/invalidCategory
+Accept: application/json
+
+###
+
+### 30) Update non-existing product
 PUT {{baseUrl}}/9999
 Content-Type: application/json
 Accept: application/json
@@ -223,27 +261,51 @@ Accept: application/json
 
 ###
 
-### 26) Delete non-existing product
+### 31) Delete non-existing product
 DELETE {{baseUrl}}/9999
 Accept: application/json
 
 ###
 
-### 27) Invalid sort field test
-### This depends on your service validation logic
+### 32) Patch seen for non-existing product
+PATCH {{baseUrl}}/seen/9999
+Accept: application/json
+
+###
+
+### 33) Patch paid for non-existing product
+PATCH {{baseUrl}}/paid/9999
+Accept: application/json
+
+###
+
+### 34) Invalid sort field test
+### Your service currently falls back to id
 GET {{baseUrl}}?page=0&size=10&sortBy=wrongField&direction=asc
 Accept: application/json
 
 ###
 
-### 28) Invalid direction test
-### This depends on your service logic; some code falls back silently to asc
+### 35) Invalid direction test
+### Your service currently falls back silently to ascending
 GET {{baseUrl}}?page=0&size=10&sortBy=name&direction=wrong
 Accept: application/json
 
 ###
 
-### 29) Large page size test
-### Useful if you added max-size protection in service
+### 36) Large page size test
+### Your service currently caps size at 50
 GET {{baseUrl}}?page=0&size=100&sortBy=id&direction=asc
+Accept: application/json
+
+###
+
+### 37) Category search using lowercase enum input
+GET {{baseUrl}}/category/office
+Accept: application/json
+
+###
+
+### 38) Category search using uppercase enum input
+GET {{baseUrl}}/category/OFFICE
 Accept: application/json

@@ -21,6 +21,7 @@ public class MoneyEntity {
     @Column(nullable = false)
     private Currency currency;
 
+
     public MoneyEntity(BigDecimal amount) {
         this.setAmount(amount);
         currency=Currency.getInstance("JOD");

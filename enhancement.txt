@@ -1,0 +1,134 @@
+Performance Enhancements Documentation for Product API
+This project started as a normal Spring Boot product management API and then several enhancements were added to improve the performance, code quality, and API behavior. So, These enhancements were chosen based on how the application works and what fits its structure.
+Here are the implemented enhancements:
+1) Indexing
+What it is
+Indexing is a database optimization technique that helps the database find data faster so it works like the index in a book. Instead of scanning all rows one by one, the database can go directly to the needed data.
+Advantages
+Improves query speed, reduces database scan time, helps filtering and sorting become more efficient, and very useful when the table grows larger
+How it was implemented
+In version 4, the category field was changed into an enum and was also indexed in the database table.
+Example:
+•	ProductCategory enum was introduced
+•	category was stored using @Enumerated(EnumType.STRING)
+•	database index was added on the category column
+This made category filtering more structured and efficient.
+Why it fits this project
+This project has a dedicated endpoint for searching products by category. Since category is used often for filtering, indexing it is a good match. Also, using an enum makes category values fixed and controlled, which works better with indexing than free-text values.
+
+2) DTO Projection
+What it is
+DTO projection means retrieving only the needed fields from the database instead of loading the full entity object.
+Normally, the application may fetch a complete entity, even if the response only needs a few fields. Projection avoids this waste.
+Advantages
+Reduces unnecessary data loading, improves read performance, reduces memory usage, makes response generation more efficient
+How it was implemented
+Instead of always loading ProductEntityV4 fully, custom JPQL queries were added in the repository to return ProductDto directly for read operations such as:
+•	get all products
+•	get by name
+•	get by category
+•	get by price
+•	get by id
+This means the application only retrieves the fields needed for the response.
+Why it fits this project
+This project is read-heavy in many endpoints. Most GET requests only need product response data, not the full entity behavior. So DTO projection fits very well here because it makes those reads lighter and faster.
+
+3) Read-Only Transactions
+What it is
+A read only transaction tells Spring that a method is only reading data and will not modify it.
+This helps the persistence layer avoid extra work such as change tracking and unnecessary flush operations.
+Advantages
+Reduces overhead in read operations, makes service behavior clearer, improves code discipline, supports cleaner separation between read and write methods
+How it was implemented
+In version 4, the service class was marked with:
+@Transactional(readOnly = true)
+This means read methods are read-only by default.
+For write methods such as:
+•	add product
+•	update product
+•	delete product
+•	patch product
+normal @Transactional was used to override the read-only behavior.
+Why it fits this project
+This project contains many GET endpoints that only read data. So marking these operations as read-only makes sense. It also fixed a previous design issue where GET requests were modifying data, which is not a good REST behavior.
+
+4) PATCH Update
+What it is
+PATCH is used for partial updates. Unlike PUT, which usually updates the whole object, PATCH updates only part of it.
+Advantages
+More flexible than full update, reduces unnecessary data changes. better for small updates, makes API behavior more meaningful
+How it was implemented
+In version 4, PATCH endpoints were added for simple state updates such as:
+•	marking a product as seen
+•	marking a product as paid
+These updates only change one field instead of sending the whole product object.
+Example:
+•	PATCH /api/v4/products/seen/{id}
+•	PATCH /api/v4/products/paid/{id}
+Why it fits this project
+This project has simple product states like isSeen and isPaid. These are small fields that do not require a full update request. So PATCH is a clean and practical fit here.
+
+Caching
+What it is
+Caching stores the result of a request temporarily so the system does not need to fetch or compute the same data again every time.
+Advantages
+Can improve response speed, reduces repeated database access, useful for repeated read operations, and good for stable data
+Why it was not chosen strongly for this project
+Caching is more useful when the data is relatively static, meaning it does not change often.
+This project is more dynamic than static in important areas:
+•	products can be created
+•	products can be updated
+•	states such as seen and paid can change
+•	category and quantity can also change
+If caching is added in such cases, there is a risk of returning old or stale data unless cache invalidation is handled carefully.
+Static vs Dynamic concept
+•	Static data: data that stays the same for long periods, such as country lists, fixed settings, or public reference data
+•	Dynamic data: data that changes frequently, such as products, stock, payment status, and user actions
+Why it does not fit strongly here
+This project deals with product records that can change often, so caching would need extra care and invalidation logic. Because of that, it was not selected as a main enhancement at this stage. It could still be useful later for specific stable endpoints, but it was not the best first choice.
+
+Other Technologies and Where They Fit
+The following technologies are important in modern backend systems, but they were not selected for this project because the project is a normal CRUD and search API. Still, they are useful in other types of systems.
+
+WebSocket
+Brief description
+WebSocket allows real-time two-way communication between client and server through a persistent connection.
+Where it fits
+•	chat applications
+•	live notifications
+•	real-time dashboards
+•	multiplayer games
+•	live tracking systems
+Why it does not fit this project
+This project uses normal request-response APIs. It does not need real-time live updates, so WebSocket would add unnecessary complexity.
+
+Microservices
+Brief description
+Microservices means splitting one system into multiple small services, where each service handles one business area.
+Where it fits
+•	large systems with many modules
+•	systems built by multiple teams
+•	applications where different parts need independent scaling
+Why it does not fit this project
+This project is small and focused. Splitting it into many services would create extra complexity without real benefit.
+
+GraphQL
+Brief description
+GraphQL is an API technology that allows the client to request exactly the data it needs.
+Where it fits
+•	systems with many related frontend data needs
+•	mobile and web apps needing flexible data fetching
+•	complex client-driven APIs
+Why it does not fit this project
+This project already works well with standard REST endpoints. Its endpoints are simple and clear, so GraphQL is not necessary here.
+
+Conclusion
+The enhancements chosen for this project were selected based on the actual needs of the application.
+The following enhancements fit the project well:
+•	Indexing, because category filtering is used often
+•	DTO projection, because many read endpoints only need response data
+•	Read-only transactions, because most GET operations should only read data
+•	PATCH update, because some fields need only partial updates
+Caching was considered, but it was not a strong fit at this stage because the product data is dynamic and changes frequently.
+Other technologies such as WebSocket, Microservices, and GraphQL are useful in other project types, especially large scale or real time systems, but they do not match the current needs of this product API.
+

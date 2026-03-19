@@ -1,7 +1,10 @@
 package com.productsapp.productsinform.config;
 
 import com.productsapp.productsinform.model.entity.ProductEntity;
+import com.productsapp.productsinform.model.entity.ProductEntityV4;
+import com.productsapp.productsinform.model.enums.ProductCategory;
 import com.productsapp.productsinform.repository.ProductRepo;
+import com.productsapp.productsinform.repository.ProductRepoV4;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,17 +18,21 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ProductSeeder implements CommandLineRunner {
 
+    private final ProductRepoV4 productRepoV4;
     private final ProductRepo productRepo;
-
     @Override
     public void run(String... args) {
         if (productRepo.count() > 0) {
-            return; // prevents duplicate insert if data already exists
+            return;
         }
 
-        List<String> categories = List.of(
-                "Electronics", "Books", "Clothing", "Home", "Sports",
-                "Beauty", "Toys", "Food", "Office", "Automotive"
+        List<ProductCategory> categories = List.of(
+                ProductCategory.ELECTRONICS,
+                ProductCategory.BOOKS,
+                ProductCategory.FASHION,
+                ProductCategory.GROCERY,
+                ProductCategory.OFFICE,
+                ProductCategory.TOYS
         );
 
         List<String> firstWords = List.of(
@@ -40,7 +47,8 @@ public class ProductSeeder implements CommandLineRunner {
         );
 
         Random random = new Random();
-        List<ProductEntity> products = new ArrayList<>();
+        List<ProductEntityV4> productsV4 = new ArrayList<>();
+        List<ProductEntity> productsV1=new ArrayList<>();
 
         for (int i = 1; i <= 100; i++) {
             String name = firstWords.get(random.nextInt(firstWords.size()))
@@ -49,16 +57,15 @@ public class ProductSeeder implements CommandLineRunner {
                     + " "
                     + i;
 
-            String category = categories.get(random.nextInt(categories.size()));
-
-            BigDecimal price = BigDecimal.valueOf(5 + random.nextInt(496)); // 5 to 500
-            int quantity = 1 + random.nextInt(100); // 1 to 100
-
-            products.add(new ProductEntity(price, name, category, quantity));
+            ProductCategory category = categories.get(random.nextInt(categories.size()));
+            BigDecimal price = BigDecimal.valueOf(5 + random.nextInt(496));
+            int quantity = 1 + random.nextInt(100);
+            productsV1.add(new ProductEntity(price,name, category.name(), quantity));
+            productsV4.add(new ProductEntityV4(price, name, category, quantity));
         }
 
-        productRepo.saveAll(products);
-
-        System.out.println("Inserted 100 products successfully.");
+        productRepo.saveAll(productsV1);
+        productRepoV4.saveAll(productsV4);
+        System.out.println("Inserted 100 v4 products successfully.");
     }
 }
